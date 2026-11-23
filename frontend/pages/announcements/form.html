@@ -1,0 +1,21 @@
+    <h1 class="mb-6 font-display text-5xl uppercase text-cream-text">New announcement</h1>
+    <section class="panel max-w-2xl">
+      <form id="ann-form" novalidate class="space-y-5">
+        <div id="form-alert" role="alert" class="hidden rounded-lg border border-red-700 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+        <div><label for="title" class="mb-1 block text-sm font-medium">Title</label><input id="title" class="input" required></div>
+        <div>
+          <label for="audio" class="mb-1 block text-sm font-medium">Audio file (MP3, WAV or similar, up to 20 MB)</label>
+          <input id="audio" type="file" accept="audio/*" class="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-burgundy file:px-4 file:py-2 file:text-white" required>
+          <audio id="preview" controls class="mt-3 hidden w-full" aria-label="Preview of the selected audio"></audio>
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input id="published" type="checkbox" checked class="h-4 w-4 accent-burgundy"> Publish immediately</label>
+        <div id="progress-wrap" class="hidden" aria-live="polite">
+          <div class="h-2 rounded bg-line"><div id="progress" class="h-2 rounded bg-burgundy" style="width:0%"></div></div>
+          <p id="progress-text" class="mt-1 text-sm text-ink-soft">Uploading 0%</p>
+        </div>
+        <div class="sticky bottom-0 -mx-6 flex gap-3 border-t border-line bg-cream px-6 py-4 sm:-mx-10 sm:px-10">
+          <button id="save" type="submit" class="btn-primary">Upload announcement</button>
+          <a href="list.html" class="btn-outline">Cancel</a>
+        </div>
+      </form>
+    </section>
