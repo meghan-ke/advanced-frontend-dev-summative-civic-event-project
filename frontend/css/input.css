@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reusable components, defined once and used on every page */
+@layer components {
+  .btn { @apply inline-flex items-center justify-center min-h-[44px] px-5 rounded-full font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold; }
+  .btn-primary { @apply btn bg-burgundy text-white hover:bg-burgundy-dark; }
+  .btn-outline { @apply btn border-2 border-burgundy text-burgundy hover:bg-burgundy hover:text-white; }
+  .card { @apply bg-white rounded-2xl shadow-lg overflow-hidden; }
+  .input { @apply h-11 w-full rounded-lg border border-line bg-white px-3 focus:outline-none focus:ring-2 focus:ring-burgundy; }
+
+  .panel { @apply bg-cream text-ink rounded-3xl shadow-2xl p-6 sm:p-10; }
+  .page-title { @apply font-display text-4xl uppercase text-burgundy pb-4 mb-6 border-b border-burgundy; }
+  .nav-link { @apply rounded font-medium text-cream-text underline-offset-8 decoration-gold decoration-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold; }
+  .nav-link[aria-current="page"] { @apply underline; }
+}
