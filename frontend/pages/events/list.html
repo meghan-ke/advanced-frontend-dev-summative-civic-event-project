@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Events · Civic Events</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/output.css">
+</head>
+<body class="flex min-h-screen flex-col bg-navy font-sans text-ink">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 rounded bg-white px-3 py-2 text-burgundy">Skip to content</a>
+  <div id="navbar"></div>
+
+  <main id="main" class="mx-auto w-full max-w-7xl flex-1 px-3 sm:px-6">
+    <h1 class="mb-6 font-display text-5xl uppercase text-cream-text">Events</h1>
+    <section class="panel">
+      <div data-role="admin" class="mb-4 flex justify-end"><a href="form.html" class="btn-primary">+ New event</a></div>
+
+      <form id="filters" role="search" class="mb-8 grid gap-4 border-b border-burgundy pb-6 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+        <div><label for="f-q" class="mb-1 block text-sm font-medium">Search</label><input id="f-q" class="input"></div>
+        <div><label for="f-date" class="mb-1 block text-sm font-medium">Date</label><input id="f-date" type="date" class="input"></div>
+        <div><label for="f-loc" class="mb-1 block text-sm font-medium">Location</label><input id="f-loc" class="input"></div>
+        <div class="flex gap-2">
+          <button type="submit" class="btn-primary">Filter</button>
+          <button type="button" id="f-reset" class="btn-outline">Reset</button>
+        </div>
+      </form>
+
+      <div id="grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-live="polite"></div>
+      <nav id="pager" aria-label="Pagination" class="mt-8 flex flex-wrap items-center justify-center gap-2"></nav>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../../js/core/config.js"></script>
+  <script src="../../js/core/storage.js"></script>
+  <script src="../../js/core/utils.js"></script>
+  <script src="../../js/core/api.js"></script>
+  <script src="../../js/core/auth.js"></script>
+  <script src="../../js/core/guard.js"></script>
+  <script src="../../js/core/ui.js"></script>
+  <script src="../../js/components/navbar.js"></script>
+  <script src="../../js/components/footer.js"></script>
+  <script src="../../js/components/notification-drawer.js"></script>
+  <script src="../../js/components/pagination.js"></script>
+  <script src="../../js/page-scripts/events-list.js"></script>
+</body>
+</html>
