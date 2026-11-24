@@ -4,27 +4,80 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Civic Events</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/output.css">
 </head>
-<body class="min-h-screen bg-navy font-sans text-cream-text p-8">
-  <main class="mx-auto max-w-xl">
-    <h1 class="font-display text-5xl uppercase mb-2">Civic Events</h1>
-    <p class="mb-8 text-cream-text">Temporary start page. This becomes the real Home page after the navbar and footer are built.</p>
+<body class="flex min-h-screen flex-col bg-navy font-sans text-ink">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 rounded bg-white px-3 py-2 text-burgundy">Skip to content</a>
+  <div id="navbar"></div>
 
-    <h2 class="font-display text-2xl uppercase mb-3">Built</h2>
-    <ul class="space-y-2 mb-8">
-      <li><a href="pages/auth/login.html" class="underline">Log in</a></li>
-      <li><a href="pages/auth/signup.html" class="underline">Sign up</a></li>
-    </ul>
+  <main id="main" class="mx-auto w-full max-w-7xl flex-1 px-3 sm:px-6">
 
-    <h2 class="font-display text-2xl uppercase mb-3">Coming next</h2>
-    <ul class="space-y-2 text-cream-text">
-      <li>Events</li>
-      <li>Announcements</li>
-      <li>Promos</li>
-      <li>Admin dashboard</li>
-    </ul>
+    <!-- Hero -->
+    <section class="px-2 py-10 text-center text-cream-text sm:py-16" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="font-display text-5xl uppercase leading-none sm:text-7xl lg:text-8xl">
+        Your
+        <span id="hero-tile" aria-hidden="true" class="inline-block h-[0.8em] w-[1.5em] rounded-md border-2 border-cream-text bg-gradient-to-br from-burgundy to-navy-dark align-middle"></span>
+        city.<br>Your events.
+      </h1>
+      <p class="mx-auto mt-6 max-w-xl text-lg text-cream-text">Find, join and review civic events in your community, and stay up to date with announcements and promos.</p>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a data-auth="guest" href="pages/auth/login.html" class="btn bg-gold text-navy-dark hover:bg-white">Log in</a>
+        <a data-auth="guest" href="pages/auth/signup.html" class="btn border-2 border-cream-text text-cream-text hover:bg-white/10">Sign up</a>
+        <a data-auth="user" href="pages/events/list.html" class="btn bg-gold text-navy-dark hover:bg-white">Browse events</a>
+        <a data-auth="user" href="pages/announcements/list.html" class="btn border-2 border-cream-text text-cream-text hover:bg-white/10">Announcements</a>
+      </div>
+    </section>
+
+    <!-- Photo strip (logged-in users only; filled from event images) -->
+    <div data-auth="user" id="strip" aria-hidden="true" class="mb-10 hidden items-end gap-4 overflow-x-auto pb-2"></div>
+
+    <!-- Logged-out visitors -->
+    <section data-auth="guest" class="panel" aria-labelledby="what-title">
+      <h2 id="what-title" class="page-title">What you can do</h2>
+      <div class="grid gap-6 md:grid-cols-3">
+        <article class="card p-6">
+          <h3 class="text-lg font-semibold">Events</h3>
+          <p class="mt-2 text-sm">Browse community events, register to attend, and leave feedback afterwards.</p>
+          <a href="pages/auth/login.html" class="btn-outline mt-4">Log in to view</a>
+        </article>
+        <article class="card p-6">
+          <h3 class="text-lg font-semibold">Announcements</h3>
+          <p class="mt-2 text-sm">Listen to audio announcements from your community organisers.</p>
+          <a href="pages/auth/login.html" class="btn-outline mt-4">Log in to listen</a>
+        </article>
+        <article class="card p-6">
+          <h3 class="text-lg font-semibold">Promos</h3>
+          <p class="mt-2 text-sm">Watch short promo videos, with captions, about what's coming up.</p>
+          <a href="pages/auth/login.html" class="btn-outline mt-4">Log in to watch</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- Logged-in users: next three events -->
+    <section data-auth="user" class="panel" aria-labelledby="up-title">
+      <div class="flex items-end justify-between gap-4 border-b border-burgundy pb-4 mb-6">
+        <h2 id="up-title" class="font-display text-4xl uppercase text-burgundy">Upcoming events</h2>
+        <a href="pages/events/list.html" class="text-sm font-semibold text-burgundy underline">See all</a>
+      </div>
+      <div id="grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" aria-live="polite"></div>
+    </section>
   </main>
+
+  <div id="footer"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="js/core/config.js"></script>
+  <script src="js/core/storage.js"></script>
+  <script src="js/core/utils.js"></script>
+  <script src="js/core/api.js"></script>
+  <script src="js/core/auth.js"></script>
+  <script src="js/core/guard.js"></script>
+  <script src="js/core/ui.js"></script>
+  <script src="js/components/navbar.js"></script>
+  <script src="js/components/footer.js"></script>
+  <script src="js/components/notification-drawer.js"></script>
+  <script src="js/page-scripts/home.js"></script>
 </body>
 </html>

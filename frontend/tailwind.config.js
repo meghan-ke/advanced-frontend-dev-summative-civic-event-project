@@ -12,7 +12,7 @@ module.exports = {
         line:     "#E2D8D1",
       },
       fontFamily: {
-        display: ['"Cormorant Garamond"', "Georgia", "serif"],
+        display: ['"Fraunces"', "Georgia", "serif"],
         sans: ["Inter", "system-ui", "sans-serif"],
       },
     },
