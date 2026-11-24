@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Promo form · Civic Events</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/output.css">
+</head>
+<body class="flex min-h-screen flex-col bg-navy font-sans text-ink">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 rounded bg-white px-3 py-2 text-burgundy">Skip to content</a>
+  <div id="navbar"></div>
+
+  <main id="main" class="mx-auto w-full max-w-7xl flex-1 px-3 sm:px-6">
+    <h1 id="form-title" class="mb-6 font-display text-5xl uppercase text-cream-text">New promo</h1>
+    <section class="panel max-w-3xl">
+      <form id="promo-form" novalidate class="space-y-5">
+        <div id="form-alert" role="alert" class="hidden rounded-lg border border-red-700 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+
+        <div><label for="title" class="mb-1 block text-sm font-medium">Title</label><input id="title" class="input" required></div>
+        <div><label for="description" class="mb-1 block text-sm font-medium">Description</label><textarea id="description" rows="4" class="input h-auto py-2" required></textarea></div>
+        <div>
+          <label for="caption_text" class="mb-1 block text-sm font-medium">Captions</label>
+          <textarea id="caption_text" rows="8" class="input h-auto py-2 font-mono text-sm" required aria-describedby="caption-help"></textarea>
+          <p id="caption-help" class="mt-1 text-sm text-ink-soft">Paste WebVTT (starting with WEBVTT) for timed captions, or enter one caption per line to divide evenly across the video.</p>
+        </div>
+        <div>
+          <label for="video" class="mb-1 block text-sm font-medium">Video (MP4, MOV, AVI or MKV, up to 15 MB)</label>
+          <input id="video" type="file" accept=".mp4,.mov,.avi,.mkv,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska" class="block w-full text-sm file:mr-3 file:rounded-full file:border-0 file:bg-burgundy file:px-4 file:py-2 file:text-white">
+          <video id="preview" controls preload="metadata" playsinline class="mt-3 hidden max-h-72 w-full rounded-xl bg-black" aria-label="Preview of the selected promo video"></video>
+        </div>
+
+        <div id="progress-wrap" class="hidden" aria-live="polite">
+          <div class="h-2 rounded bg-line"><div id="progress" class="h-2 rounded bg-burgundy" style="width:0%"></div></div>
+          <p id="progress-text" class="mt-1 text-sm text-ink-soft">Uploading 0%</p>
+        </div>
+
+        <div class="sticky bottom-0 -mx-6 flex gap-3 border-t border-line bg-cream px-6 py-4 sm:-mx-10 sm:px-10">
+          <button id="save" type="submit" class="btn-primary">Upload promo</button>
+          <a href="list.html" class="btn-outline">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../../js/core/config.js"></script>
+  <script src="../../js/core/storage.js"></script>
+  <script src="../../js/core/utils.js"></script>
+  <script src="../../js/core/api.js"></script>
+  <script src="../../js/core/auth.js"></script>
+  <script src="../../js/core/guard.js"></script>
+  <script src="../../js/core/ui.js"></script>
+  <script src="../../js/components/navbar.js"></script>
+  <script src="../../js/components/footer.js"></script>
+  <script src="../../js/components/notification-drawer.js"></script>
+  <script src="../../js/page-scripts/promo-form.js"></script>
+</body>
+</html>

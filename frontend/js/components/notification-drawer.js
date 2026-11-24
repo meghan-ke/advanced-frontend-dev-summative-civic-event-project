@@ -1,19 +1,15 @@
 // In-app notifications drawer (GET /api/notifications).
-
+// Slides in from the right, traps focus, closes with Esc, and returns focus to the bell.
+// The backend has no endpoint for users to mark a notification read, so read state is kept per user in this browser (Store.seenIds).
 const NotificationDrawer = (() => {
   const E = Utils.esc;
   let items = [], loaded = false, err = null;
   let built = false, isOpen = false, detailOpen = false, lastFocus = null, timer = null, polling = null;
   const uid = () => (Auth.user() || {}).id;
 
-  const meta = n => {
-    let m = n.metadata;
-    if (typeof m === "string") { try { m = JSON.parse(m); } catch { m = null; } }
-    return m || {};
-  };
-  // Link to the related resource using the notification's metadata (event_id, announcement_id, promo_id)
+  // Link to the related resource using the notification's metadata
   const related = n => {
-    const m = meta(n);
+    const m = Utils.meta(n);
     if (m.event_id) return { label: "View event", href: Config.page("events/detail.html?id=" + encodeURIComponent(m.event_id)) };
     if (m.announcement_id) return { label: "Listen to announcement", href: Config.page("announcements/detail.html?id=" + encodeURIComponent(m.announcement_id)) };
     if (m.promo_id) return { label: "Watch promo", href: Config.page("promos/detail.html?id=" + encodeURIComponent(m.promo_id)) };
@@ -22,7 +18,7 @@ const NotificationDrawer = (() => {
   const unread = () => { const seen = Store.seenIds(uid()); return items.filter(n => !seen.has(n.id)); };
   const updateCount = () => Navbar.setCount(unread().length);
 
-  // Optimistic: the badge drops straight away (state is local, so there is nothing to roll back)
+  // Optimistic: the badge drops straight away (the state is local, so there is nothing to roll back)
   function markSeen(ids) { Store.markSeen(uid(), ids); updateCount(); }
 
   function build() {
@@ -44,7 +40,6 @@ const NotificationDrawer = (() => {
           <a href="${Config.page("notifications.html")}" class="font-semibold text-burgundy underline">View all notifications</a>
         </div>
       </aside>`);
-      
 
     $("#drawer-overlay, #drawer-close").on("click", close);
     $("#drawer-readall").on("click", () => { markSeen(items.map(n => n.id)); renderList(); });
@@ -141,7 +136,7 @@ const NotificationDrawer = (() => {
 
   return {
     open, close,
-    init() {                    
+    init() {            // called by Navbar.mount(): loads the unread count, then refreshes it every minute
       build();
       refresh();
       if (!polling) polling = setInterval(refresh, 60000);

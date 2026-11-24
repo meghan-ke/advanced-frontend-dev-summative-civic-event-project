@@ -1,5 +1,6 @@
 // Shared top navigation. Every page calls Navbar.mount() after its auth guard.
-
+// ROLE-BASED UI: the data-auth / data-role attributes below are stripped by Guard.applyRoleUI(),
+// so a normal user never receives the admin links in the DOM (the backend still enforces access).
 const Navbar = (() => {
   const E = Utils.esc;
   const NAV = [
@@ -9,10 +10,12 @@ const Navbar = (() => {
   ];
   const current = folder => location.pathname.includes("/pages/" + folder + "/") ? ' aria-current="page"' : "";
   const initials = n => (n || "?").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+  const ring = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold";
+  const isPage = p => location.pathname.toLowerCase().endsWith("/" + p);
 
   const links = cls => NAV.map(([label, href, folder]) =>
       `<a href="${Config.page(href)}" class="${cls}"${current(folder)}>${label}</a>`).join("") +
-    `<a data-role="admin" href="${Config.page("admin/dashboard.html")}" class="${cls}"${current("admin")}>Admin</a>`;
+    `<a data-role="admin" href="${Config.page("admin/dashboard.html")}" class="${cls}"${current("admin")}>Dashboard</a>`;
 
   const searchForm = id => `
     <form class="search-form" role="search">
@@ -21,14 +24,33 @@ const Navbar = (() => {
         class="h-11 w-full rounded-full border border-cream-text/40 bg-navy-dark px-4 text-cream-text placeholder:text-cream-text/70 focus:outline-none focus:ring-2 focus:ring-gold">
     </form>`;
 
-  const ring = "focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold";
-
   function html() {
     const u = Auth.user() || {};
+    const homeHref = u.role === "admin"
+      ? Config.page("admin/dashboard.html")
+      : u.role === "user"
+        ? Config.page("events/list.html")
+        : Config.ROOT + "index.html";
+    let backLink = "";
+
+    if (u.role === "admin" && !isPage("admin/dashboard.html")) {
+      backLink = `<a href="${Config.page("admin/dashboard.html")}" class="inline-flex items-center gap-1 text-sm font-semibold text-cream-text underline decoration-gold/60 underline-offset-4 hover:text-gold">&larr; Back to admin dashboard</a>`;
+    } else if (u.role === "user") {
+      if (location.pathname.includes("/pages/events/detail.html")) {
+        backLink = `<a href="${Config.page("events/list.html")}" class="inline-flex items-center gap-1 text-sm font-semibold text-cream-text underline decoration-gold/60 underline-offset-4 hover:text-gold">&larr; Back to events</a>`;
+      } else if (location.pathname.includes("/pages/announcements/detail.html")) {
+        backLink = `<a href="${Config.page("announcements/list.html")}" class="inline-flex items-center gap-1 text-sm font-semibold text-cream-text underline decoration-gold/60 underline-offset-4 hover:text-gold">&larr; Back to announcements</a>`;
+      } else if (location.pathname.includes("/pages/promos/detail.html")) {
+        backLink = `<a href="${Config.page("promos/list.html")}" class="inline-flex items-center gap-1 text-sm font-semibold text-cream-text underline decoration-gold/60 underline-offset-4 hover:text-gold">&larr; Back to promos</a>`;
+      } else if (!location.pathname.includes("/pages/events/list.html") && !location.pathname.endsWith("/index.html")) {
+        backLink = `<a href="${Config.page("events/list.html")}" class="inline-flex items-center gap-1 text-sm font-semibold text-cream-text underline decoration-gold/60 underline-offset-4 hover:text-gold">&larr; Back to events</a>`;
+      }
+    }
+
     return `
     <header class="text-cream-text">
       <div class="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 sm:px-6">
-        <a href="${Config.ROOT}index.html" class="font-display text-3xl tracking-widest ${ring}">CIVIC</a>
+        <a href="${homeHref}" class="font-display text-3xl tracking-widest ${ring}" aria-label="CIVIC home">CIVIC</a>
         <nav data-auth="user" aria-label="Main" class="ml-6 hidden items-center gap-6 lg:flex">${links("nav-link")}</nav>
         <div class="flex-1"></div>
 
@@ -55,6 +77,7 @@ const Navbar = (() => {
             <p class="border-b border-line px-4 py-2 text-xs text-ink-soft">Signed in as <span class="font-semibold text-ink">${E(u.role)}</span></p>
             <a href="${Config.page("profile.html")}" class="block px-4 py-3 text-sm hover:bg-cream">My profile</a>
             <a data-role="user" href="${Config.page("my-registrations.html")}" class="block px-4 py-3 text-sm hover:bg-cream">My registrations</a>
+            <a href="${Config.page("notifications.html")}" class="block px-4 py-3 text-sm hover:bg-cream">All notifications</a>
             <a data-role="admin" href="${Config.page("admin/dashboard.html")}" class="block px-4 py-3 text-sm hover:bg-cream">Admin dashboard</a>
             <button id="logout-btn" type="button" class="block w-full px-4 py-3 text-left text-sm text-red-700 hover:bg-cream">Log out</button>
           </div>
@@ -70,6 +93,7 @@ const Navbar = (() => {
         <div class="py-3 md:hidden">${searchForm("mobile-q")}</div>
         <nav aria-label="Mobile" class="flex flex-col">${links("nav-link block py-3")}</nav>
       </div>
+      ${backLink ? `<div class="mx-auto max-w-7xl px-4 pb-3 sm:px-6">${backLink}</div>` : ""}
     </header>`;
   }
 

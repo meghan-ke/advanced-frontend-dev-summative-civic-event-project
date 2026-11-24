@@ -1,4 +1,5 @@
 // The ONLY place that talks to the backend. Pages never call $.ajax directly.
+// Resolves with the backend's full JSON ({status, message, data}); rejects with {status, message}.
 const Api = (() => {
   function toError(xhr) {
     const status = xhr.status;
@@ -18,10 +19,10 @@ const Api = (() => {
     const token = Store.getToken();
     if (token) opts.headers.Authorization = "Bearer " + token;   // required by every protected route
     if (body !== undefined) {
-      if (isForm) { opts.data = body; opts.processData = false; opts.contentType = false; } // multipart uploads
+      if (isForm) { opts.data = body; opts.processData = false; opts.contentType = false; }   // multipart uploads
       else { opts.data = JSON.stringify(body); opts.contentType = "application/json"; }
     }
-    if (onProgress) {   
+    if (onProgress) {   // upload progress, 0 to 100
       opts.xhr = () => {
         const x = $.ajaxSettings.xhr();
         if (x.upload) x.upload.addEventListener("progress", e => { if (e.lengthComputable) onProgress(Math.round(e.loaded / e.total * 100)); });

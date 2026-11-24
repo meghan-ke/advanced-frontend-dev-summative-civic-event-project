@@ -5,8 +5,12 @@ const Guard = {
     requiredAuth() {
         if (Auth.isLoggedIn()) return true;
         if (Store.getToken()) Auth.expire();
-        else location.replace(Config.PAGE_SIZE("auth/login.html"));
+        else location.replace(Config.page("auth/login.html"));
         return false;
+    },
+
+    requireAuth() {
+        return this.requiredAuth();
     },
 
     // admin only pages such as (events/promo/announcement forms, dashboard, users). Non-admins go to 403.

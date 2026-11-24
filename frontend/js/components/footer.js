@@ -1,4 +1,4 @@
-// Shared footer: about, quick links, help and contact. 
+// Shared footer: about, quick links, help and contact. Pages call Footer.mount().
 const Footer = {
   mount() {
     const L = p => Config.page(p);
