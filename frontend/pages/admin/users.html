@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage users · Civic Events</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/output.css">
+</head>
+<body class="flex min-h-screen flex-col bg-navy font-sans text-ink">
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 rounded bg-white px-3 py-2 text-burgundy">Skip to content</a>
+  <div id="navbar"></div>
+
+  <main id="main" class="mx-auto w-full max-w-7xl flex-1 px-3 sm:px-6">
+    <div class="mb-6">
+      <h1 class="font-display text-5xl uppercase text-cream-text">Manage users</h1>
+      <p class="mt-2 text-cream-text">View accounts and manage access. Roles are read-only.</p>
+    </div>
+    <section class="panel">
+      <div class="mb-5 grid gap-4 sm:grid-cols-2 sm:items-end">
+        <div>
+          <label for="user-search" class="mb-1 block text-sm font-medium">Search by name or email</label>
+          <input id="user-search" type="search" class="input" autocomplete="off">
+        </div>
+        <p id="user-count" class="text-sm text-ink-soft" aria-live="polite">Loading users…</p>
+      </div>
+      <div id="users-error" class="hidden"></div>
+      <div id="users-table-wrap" class="overflow-x-auto">
+        <table class="w-full min-w-[700px] text-left text-sm">
+          <thead><tr class="border-b border-burgundy">
+            <th scope="col" class="py-3 pr-4">Name</th>
+            <th scope="col" class="py-3 pr-4">Email</th>
+            <th scope="col" class="py-3 pr-4">Role</th>
+            <th scope="col" class="py-3 pr-4">Status</th>
+            <th scope="col" class="py-3">Actions</th>
+          </tr></thead>
+          <tbody id="users-body" aria-live="polite"></tbody>
+        </table>
+      </div>
+      <nav id="users-pager" aria-label="User pagination" class="mt-6 flex flex-wrap items-center justify-center gap-2"></nav>
+    </section>
+
+    <section id="user-detail" class="panel mt-6 hidden" aria-labelledby="user-detail-title" aria-live="polite"></section>
+  </main>
+
+  <div id="footer"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../../js/core/config.js"></script>
+  <script src="../../js/core/storage.js"></script>
+  <script src="../../js/core/utils.js"></script>
+  <script src="../../js/core/api.js"></script>
+  <script src="../../js/core/auth.js"></script>
+  <script src="../../js/core/guard.js"></script>
+  <script src="../../js/core/ui.js"></script>
+  <script src="../../js/components/navbar.js"></script>
+  <script src="../../js/components/footer.js"></script>
+  <script src="../../js/components/notification-drawer.js"></script>
+  <script src="../../js/components/pagination.js"></script>
+  <script src="../../js/page-scripts/admin-users.js"></script>
+</body>
+</html>
