@@ -17,7 +17,8 @@ $(function () {
     <div class="panel">
       <div class="grid gap-8 lg:grid-cols-3">
         <div class="lg:col-span-2">
-          ${img ? `<img src="${E(img)}" alt="${E(ev.title)}" class="mb-6 max-h-96 w-full rounded-2xl object-cover">` : ""}
+          ${img ? `<img src="${E(img)}" alt="${E(ev.title)}" class="mb-6 max-h-96 w-full rounded-2xl object-cover">`
+            : '<div aria-hidden="true" class="mb-6 h-56 rounded-2xl bg-gradient-to-br from-burgundy to-navy sm:h-72"></div>'}
           <h1 class="page-title">${E(ev.title)}</h1>
           <p class="whitespace-pre-line">${E(ev.description)}</p>
         </div>
@@ -53,8 +54,9 @@ $(function () {
     $d.html('<div class="panel h-96 animate-pulse"></div>');
     try {
       const ev = (await Api.get("/events/" + id)).data;
+      if (!admin && ev.published === false) return location.replace(Config.page("errors/404.html"));
       if (!admin) {
-        const regs = await Api.get("/event-registrations/my-registrations").catch(() => null);
+        const regs = await Api.get("/event-registrations/my-registrations");
         registered = list(regs && regs.data).some(r => r.status !== "cancelled" && String(r.event_id ?? r.id) === String(id));
       }
       $d.html(view(ev));
@@ -116,11 +118,24 @@ $(function () {
         $l.html(all.map(f => `<article class="card p-4">
           <p class="font-semibold">${E(f.full_name || f.user_name || "Attendee")} <span class="text-burgundy" aria-hidden="true">${"★".repeat(Number(f.rating) || 0)}</span><span class="sr-only"> ${E(f.rating)} out of 5</span></p>
           <p class="text-sm">${E(f.comment)}</p></article>`).join(""));
-      } catch (e) { $s.html('<p class="text-red-700" role="alert">' + E(e.message) + "</p>"); }
+      } catch (e) {
+        $s.html(`<div role="alert" class="rounded-lg border border-red-700 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <p>${E(e.message)}</p><button type="button" data-retry-feedback class="mt-3 underline">Try feedback again</button>
+        </div>`);
+        $l.empty();
+      }
       return;
     }
     let mine = null;
-    try { mine = list((await Api.get("/event-feedback/my-feedback")).data).find(f => String(f.event_id) === String(id)) || null; } catch {}
+    try {
+      mine = list((await Api.get("/event-feedback/my-feedback")).data).find(f => String(f.event_id) === String(id)) || null;
+    } catch (e) {
+      $s.html(`<div role="alert" class="rounded-lg border border-red-700 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p>${E(e.message)}</p><button type="button" data-retry-feedback class="mt-3 underline">Try feedback again</button>
+      </div>`);
+      $l.empty(); $("#fb-form-wrap").empty();
+      return;
+    }
     $s.html(mine
       ? `<p>Your rating: <span class="text-burgundy" aria-hidden="true">${"★".repeat(Number(mine.rating) || 0)}</span><span class="sr-only">${E(mine.rating)} out of 5</span></p>`
       : '<p class="text-ink-soft">You have not reviewed this event yet. Average ratings are visible to administrators.</p>');
@@ -157,5 +172,6 @@ $(function () {
   }
 
   $d.on("click", "[data-retry]", load);
+  $d.on("click", "[data-retry-feedback]", loadFeedback);
   load();
 });

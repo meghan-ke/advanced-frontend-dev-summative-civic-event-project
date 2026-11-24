@@ -5,7 +5,8 @@ $(function () {
 
   const id = Utils.param("id"), editing = !!id;
   const $form = $("#event-form"), $btn = $("#save"), $alert = $("#form-alert");
-  const IMG_TYPES = ["image/jpeg", "image/png", "image/webp"];
+  const IMG_TYPES = ["image/jpeg", "image/png", "image/gif"];
+  let previewUrl = null;
 
   // Edit mode: load the event and fill the form
   if (editing) {
@@ -28,8 +29,16 @@ $(function () {
     const f = this.files[0];
     if (!f) return;
     const msg = Utils.validateFile(f, IMG_TYPES, Config.MAX_IMAGE_MB);
-    if (msg) { this.value = ""; return UI.fieldError($(this), msg); }
-    $("#preview").attr("src", URL.createObjectURL(f)).removeClass("hidden");
+    if (msg) {
+      this.value = "";
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      $("#preview").attr("src", "").addClass("hidden");
+      return UI.fieldError($(this), msg);
+    }
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(f);
+    $("#preview").attr("src", previewUrl).removeClass("hidden");
   });
 
   $form.on("submit", async e => {
@@ -70,4 +79,6 @@ $(function () {
       $("#progress-wrap").addClass("hidden");
     }
   });
+
+  window.addEventListener("beforeunload", () => { if (previewUrl) URL.revokeObjectURL(previewUrl); });
 });

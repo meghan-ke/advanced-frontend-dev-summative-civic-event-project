@@ -30,7 +30,7 @@ $(function () {
 
   function render() {
     const shown = items.filter(a => admin || a.published !== false);   // normal users: published only
-    $grid.html(shown.length ? shown.map(card).join("") : UI.empty("No announcements yet."));
+    $grid.html(shown.length ? shown.map(card).join("") : UI.empty("No announcements are available yet."));
     Guard.applyRoleUI(document.getElementById("main"));   // ELEMENT-LEVEL GUARD: strips admin buttons for users
   }
 

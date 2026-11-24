@@ -9,7 +9,8 @@ $(function () {
   async function load() {
     $d.html('<div class="panel h-64 animate-pulse"></div>');
     try {
-      const a = (await Api.get("/announcements/" + id)).data;
+      const a = (await Api.get("/announcements/" + encodeURIComponent(id))).data;
+      if (!Auth.isAdmin() && a.published === false) return location.replace(Config.page("errors/404.html"));
       const src = Utils.mediaUrl(a.audio_url, "announcements");   
       $d.html(`<section class="panel">
         <p class="text-sm text-ink-soft">${E(Utils.fmtDate(a.created_at))}</p>

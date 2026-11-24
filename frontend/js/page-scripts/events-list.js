@@ -5,29 +5,41 @@ $(function () {
 
   const E = Utils.esc, PER = Config.PAGE_SIZE, admin = Auth.isAdmin();
   const state = { all: [], regs: new Set(), page: 1, f: { q: Utils.param("q") || "", date: "", loc: "" } };
-  const $grid = $("#grid");
+  const $grid = $("#grid"), $summary = $("#results-summary");
   const list = x => Array.isArray(x) ? x : (x && (x.items || x.events || x.registrations)) || [];
   const regEventId = r => String(r.event_id ?? r.id);
   $("#f-q").val(state.f.q);
 
   async function load() {
     $grid.html(UI.skeletonCards(6));
+    $summary.text("Loading events…");
     try {
       const calls = [Api.get("/events")];
-      if (!admin) calls.push(Api.get("/event-registrations/my-registrations").catch(() => null));
+      if (!admin) calls.push(Api.get("/event-registrations/my-registrations"));
       const [ev, regs] = await Promise.all(calls);
       state.all = list(ev.data);
       state.regs = new Set(list(regs && regs.data).filter(r => r.status !== "cancelled").map(regEventId));
       render();
-    } catch (e) { $grid.html(UI.error(e.message)); }
+    } catch (e) {
+      $summary.empty();
+      $grid.html(UI.error(e.message));
+      $("#pager").empty();
+    }
   }
 
   function filtered() {
     const { q, date, loc } = state.f, ql = q.toLowerCase(), ll = loc.toLowerCase();
     return state.all
+      .filter(ev => admin || ev.published !== false)
       .filter(ev => !ql || [ev.title, ev.description, ev.location].some(s => String(s || "").toLowerCase().includes(ql)))
       .filter(ev => !ll || String(ev.location || "").toLowerCase().includes(ll))
-      .filter(ev => !date || (ev.starts_at && new Date(ev.starts_at).toLocaleDateString("en-CA") === date))
+      .filter(ev => {
+        if (!date) return true;
+        const starts = new Date(ev.starts_at);
+        if (!Number.isFinite(starts.getTime())) return false;
+        const day = [starts.getFullYear(), String(starts.getMonth() + 1).padStart(2, "0"), String(starts.getDate()).padStart(2, "0")].join("-");
+        return day === date;
+      })
       .sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
   }
 
@@ -51,9 +63,15 @@ $(function () {
 
   function render() {
     const items = filtered(), pages = Math.max(1, Math.ceil(items.length / PER));
+    const visibleCount = state.all.filter(ev => admin || ev.published !== false).length;
     state.page = Math.min(state.page, pages);
     const slice = items.slice((state.page - 1) * PER, state.page * PER);
-    $grid.html(slice.length ? slice.map(card).join("") : UI.empty("No events match your search."));
+    $summary.text(items.length
+      ? `${items.length} event${items.length === 1 ? "" : "s"} found.`
+      : visibleCount ? "No events match your filters." : admin ? "No events have been added yet." : "No published events are available yet.");
+    $grid.html(slice.length ? slice.map(card).join("") : UI.empty(visibleCount
+      ? "Try changing or clearing your filters."
+      : admin ? "Create an event to get started." : "Check back soon for upcoming events."));
     Guard.applyRoleUI(document.getElementById("main"));   // ELEMENT-LEVEL GUARD: strips Register/Edit/Delete by role
     Pagination.render($("#pager"), state.page, pages, p => { state.page = p; render(); window.scrollTo({ top: 0 }); });
   }

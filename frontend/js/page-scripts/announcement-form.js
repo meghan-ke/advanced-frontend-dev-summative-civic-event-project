@@ -4,14 +4,29 @@ $(function () {
   Navbar.mount(); Footer.mount();
 
   const $form = $("#ann-form"), $btn = $("#save"), $alert = $("#form-alert");
+  const allowedExtensions = [".mp3", ".wav", ".m4a", ".ogg"];
+  let previewUrl = null;
 
   $("#audio").on("change", function () {
     $(this).next(".field-error").remove();
     const f = this.files[0];
     if (!f) return;
-    const msg = Utils.validateFile(f, ["audio/"], Config.MAX_AUDIO_MB);
-    if (msg) { this.value = ""; $("#preview").addClass("hidden"); return UI.fieldError($(this), msg); }
-    $("#preview").attr("src", URL.createObjectURL(f)).removeClass("hidden");
+    const extension = f.name.slice(f.name.lastIndexOf(".")).toLowerCase();
+    const msg = !allowedExtensions.includes(extension)
+      ? "Choose an MP3, WAV, M4A or OGG audio file."
+      : f.size > Config.MAX_AUDIO_MB * 1024 * 1024
+        ? "The audio file must be no larger than " + Config.MAX_AUDIO_MB + " MB."
+        : "";
+    if (msg) {
+      this.value = "";
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = null;
+      $("#preview").attr("src", "").addClass("hidden");
+      return UI.fieldError($(this), msg);
+    }
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(f);
+    $("#preview").attr("src", previewUrl).removeClass("hidden")[0].load();
   });
 
   $form.on("submit", async e => {
@@ -37,9 +52,17 @@ $(function () {
     
       const created = res.data;
       if ($("#published").is(":checked") && created && created.id && created.published !== true) {
-        try { await Api.patch("/announcements/" + created.id + "/publish"); } catch { /* admin can publish from the list */ }
+        try {
+          await Api.patch("/announcements/" + encodeURIComponent(created.id) + "/publish");
+        } catch (publishError) {
+          Store.setFlash("Announcement uploaded as a draft, but could not be published: " + publishError.message, "error");
+          location.href = Config.page("announcements/list.html");
+          return;
+        }
       }
-      Store.setFlash("Announcement created. Users will be notified.", "success");
+      Store.setFlash($("#published").is(":checked")
+        ? "Announcement published. Users will be notified."
+        : "Announcement saved as a draft.", "success");
       location.href = Config.page("announcements/list.html");
     } catch (err) {
       $alert.text(err.message).removeClass("hidden");
@@ -47,4 +70,6 @@ $(function () {
       $("#progress-wrap").addClass("hidden");
     }
   });
+
+  window.addEventListener("beforeunload", () => { if (previewUrl) URL.revokeObjectURL(previewUrl); });
 });
